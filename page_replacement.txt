@@ -1,0 +1,84 @@
+def fifo_page_replacement(pages, frames):
+    page_faults = 0
+    memory = []
+    print("\nFIFO Page Replacement:")
+
+    for page in pages:
+        if page not in memory:
+            if len(memory) == frames:
+                memory.pop(0)
+            memory.append(page)
+            page_faults += 1
+            print(f"Page {page} caused a page fault.")
+        else:
+            print(f"Page {page} accessed without page fault.")
+    
+    print(f"Total Page Faults (FIFO): {page_faults}")
+
+
+def lru_page_replacement(pages, frames):
+    page_faults = 0
+    memory = []
+    print("\nLRU Page Replacement:")
+
+    for page in pages:
+        if page not in memory:
+            if len(memory) == frames:
+                memory.pop(0)
+            memory.append(page)
+            page_faults += 1
+            print(f"Page {page} caused a page fault.")
+        else:
+            memory.remove(page)
+            memory.append(page)
+            print(f"Page {page} accessed without page fault.")
+    
+    print(f"Total Page Faults (LRU): {page_faults}")
+
+
+def optimal_page_replacement(pages, frames):
+    page_faults = 0
+    memory = []
+    print("\nOptimal Page Replacement:")
+
+    for i, page in enumerate(pages):
+        if page not in memory:
+            if len(memory) < frames:
+                memory.append(page)
+            else:
+                # Find the page to replace based on future usage
+                farthest = i
+                index_to_replace = -1
+                for j in range(len(memory)):
+                    try:
+                        next_use = pages[i + 1:].index(memory[j])
+                    except ValueError:
+                        next_use = float('inf')  # If the page isn't used again
+
+                    if next_use > farthest:
+                        farthest = next_use
+                        index_to_replace = j
+                
+                if index_to_replace == -1:
+                    index_to_replace = 0  # Default replacement if all pages are reused
+
+                memory[index_to_replace] = page
+            page_faults += 1
+            print(f"Page {page} caused a page fault.")
+        else:
+            print(f"Page {page} accessed without page fault.")
+
+    print(f"Total Page Faults (Optimal): {page_faults}")
+
+
+# Predefined values
+frames = 3
+pages = [7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3, 2]
+
+print("Page Reference Sequence:", pages)
+print("Number of Frames:", frames)
+
+# Run each page replacement algorithm
+fifo_page_replacement(pages, frames)
+lru_page_replacement(pages, frames)
+optimal_page_replacement(pages, frames)
